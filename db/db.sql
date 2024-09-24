@@ -145,6 +145,7 @@ create table orders (
 );
 
 
+
 DROP TABLE IF EXISTS order_has_products CASCADE;
 CREATE TABLE order_has_products(
 	id_order BIGINT NOT NULL,
