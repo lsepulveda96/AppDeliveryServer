@@ -32,6 +32,7 @@ const users = require('./routes/usersRoutes');
 const categories = require('./routes/categoriesRoutes');
 const products = require('./routes/productsRoutes');
 const address = require('./routes/addressRoutes');
+const orders = require('./routes/ordersRoutes');
 
 const port = process.env.PORT || 3000;
 
@@ -69,6 +70,7 @@ users(app, upload);
 categories(app, upload);
 products(app, upload);
 address(app);
+orders(app);
 
 // importante establecer ip correcta, ver si cambia
 // ctrl + c para detener aplicacion

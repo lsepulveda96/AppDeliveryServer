@@ -131,7 +131,7 @@ drop table if exists orders CASCADE;
 create table orders (
 	id BIGSERIAL PRIMARY KEY,
 	id_client BIGINT NOT NULL, 
-	id_delivery BIGINT NOT NULL, 
+	id_delivery BIGINT NULL, 
 	id_address BIGINT NOT NULL,
 	lat DECIMAL DEFAULT 0, -- para saber posicion real del repartidor
 	lng DECIMAL DEFAULT 0,
