@@ -15,6 +15,8 @@ const passport = require('passport');
 const multer = require('multer');
 const serviceAccount = require('./serviceAccountKey.json');
 const admin = require('firebase-admin')
+const io = require('socket.io')(server);
+const ordersDeliverySocket = require('./sockets/orders_delivery_socket');
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
@@ -71,6 +73,13 @@ categories(app, upload);
 products(app, upload);
 address(app);
 orders(app);
+
+// llamar a los sockets
+
+// constante de socket io
+ordersDeliverySocket(io);
+
+
 
 // importante establecer ip correcta, ver si cambia
 // ctrl + c para detener aplicacion
