@@ -27,6 +27,23 @@ module.exports = {
         }
     },
 
+    async findDeliveryMan(req, res, next){
+        try{
+            // await espera hasta que se ejecute la consulta para seguir con el siguiente codigo
+            const data = await User.findDeliveryMan(); // devuelve todos los repartidores
+            console.log(`Usuarios: ${data}`);
+            return res.status(201).json(data);
+        }
+        catch(error){
+            console.log(`Error: ${error}`);
+            return res.status(501).json(
+                {
+                    sucess: false,
+                    message: 'Error al obtener los repartidores'
+                });
+        }
+    },
+
     async register(req, res, next){
         try{
             // recibe parametros a traves del body

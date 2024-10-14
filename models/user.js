@@ -50,6 +50,31 @@ User.findByEmail = (email) => {
     return db.oneOrNone(sql, email); // uno o ninguno
 }
 
+User.findDeliveryMan = () => {
+    const sql = `
+   SELECT 
+	U.id,
+	U.email,
+	U.name,
+	U.lastname,
+	U.image,
+	U.phone,
+	U.password,
+	U.session_token
+	FROM 
+	users AS U
+	INNER JOIN 
+	user_has_roles AS UHR
+	ON
+	U.id = UHR.id_user
+	INNER JOIN
+	roles AS R
+	ON 
+	R.id = UHR.id_rol
+	WHERE R.id = 3`;
+    return db.manyOrNone(sql); // uno o ninguno
+}
+
 
 User.findById = async (id, callback) => {
     // $1 hace referencia al primer parametro
