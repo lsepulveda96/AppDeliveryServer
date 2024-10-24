@@ -1,6 +1,7 @@
 const Order = require('../models/order');
 const OrderHasProducts = require('../models/order_has_products');
 const timeRelative = require('../utils/time_relative');
+const pushNotificationController = require('../controllers/pushNotificationController');
 
 module. exports = {
 
@@ -84,6 +85,13 @@ module. exports = {
     
     async create(req, res, next) {
         try{
+
+            // Despues de simular que el pago se efectuo correctamente
+            pushNotificationController.sendNotification('fwYVJchcQgehqWrKVWHW6_:APA91bFgeDqRZ8D6StTZozopHw5ZyIFyRHt-824SjYJDXMFtruWTRMjomfBIGk49Wu1wu52bv6ty8pf1Oi4pfT7LCvYaWzVIfDgKseERZ5YaS6kUfLzW5CRm30BbYTO3LhMhLxIKXMVU',{
+                title: 'Compra realizada',
+                body: 'Un cliente ha realizado una compra',
+                id_notification: '1'
+            });
             
             const order = req.body;
             order.status = 'PAGADO'

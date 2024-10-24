@@ -190,13 +190,13 @@ module.exports = {
 
 async updateWithoutImage(req,res,next){
     try{
-
+        
         console.log("Usuario", req.body);
         const user = req.body; //cliente debe enviarnos un objeto user
         console.log("Usuario parseado", user);
-
+        
         await User.update(user); //guarda url en db
-
+        
         return res.status(201).json({
             success: true,
             message: 'Datos del usuario actualizados',
@@ -209,8 +209,31 @@ async updateWithoutImage(req,res,next){
             success: false,
             message: 'Error al actualizar datos del usuario',
             error: error
-    });
-}
+        });
+    }
+},
+
+
+async updateNotificationToken(req,res,next){
+    try{
+        
+  
+        const user = req.body; // datos que envia el cliente
+        await User.updateNotificationToken(user.id, user.notification_token)
+
+        return res.status(201).json({
+            success: true,
+            message: 'El token de notificaciones se ha actualizado correctamente'
+        });
+        
+    }catch(error){
+        console.log(`Error: ${error}`);
+        return res.status(501).json({
+            success: false,
+            message: 'Error al actualizar el token de notificaciones',
+            error: error
+        });
+    }
 }
 
 };

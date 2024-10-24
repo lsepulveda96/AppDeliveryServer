@@ -162,4 +162,22 @@ User.updateSessionToken = (id_user, session_token) => {
 }
 
 
+User.updateNotificationToken = (id_user, notification_token) => {
+    const sql = `
+    UPDATE 
+        users
+    SET
+        notification_token = $2
+    WHERE
+        id = $1
+    `;
+
+    return db.none(sql, [
+        id_user,
+        notification_token
+    ]);
+
+}
+
+
 module.exports = User;
