@@ -76,6 +76,49 @@ User.findDeliveryMan = () => {
 }
 
 
+
+User.getAdminsNoitificationsTokens = () => {
+    const sql = `
+   SELECT 
+	    U.notification_token
+	FROM 
+	    users AS U
+	INNER JOIN 
+	    user_has_roles AS UHR
+	ON
+	    U.id = UHR.id_user
+	INNER JOIN
+	    roles AS R
+	ON 
+	    R.id = UHR.id_rol
+	WHERE R.id = 2`;
+    return db.manyOrNone(sql); // uno o ninguno
+}
+
+
+User.getNoitificationTokenById = (id_user) => {
+    const sql = `
+  SELECT 
+	    U.notification_token,
+        U.name,
+        U.lastname
+	FROM 
+	    users AS U
+	INNER JOIN 
+	    user_has_roles AS UHR
+	ON
+	    U.id = UHR.id_user
+	INNER JOIN
+	    roles AS R
+	ON 
+	    R.id = UHR.id_rol
+	WHERE U.id = $1
+	GROUP BY U.id`;
+    return db.oneOrNone(sql, id_user); // uno o ninguno
+}
+
+
+
 User.findById = async (id, callback) => {
     // $1 hace referencia al primer parametro
     const sql = `SELECT id,email,name,lastname,image,phone,password,session_token FROM users WHERE id=$1`;

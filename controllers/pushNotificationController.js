@@ -71,7 +71,6 @@ module.exports = {
         const options = {
             hostname: 'fcm.googleapis.com',
             path: '/v1/projects/kotlindelivery-abeaf/messages:send',
-            //C:\Users\LUCIANO\Documents\ProyectoAppDeliveryKotlinUdemy\NodeProject\BackendDeliveryAppUdemy\kotlindelivery-abeaf-firebase-adminsdk-ynjj2-19e3647b46.json
             method: 'POST',
             port: 443,
             headers: {
@@ -93,5 +92,65 @@ module.exports = {
 
         req.write(notification);
         req.end();
-    }
+    },
+
+
+// Enviar notificación a múltiples dispositivos mediante un loop
+async sendNotificationToMultipleDevices(tokens, data) {
+    const accessToken = await getAccessToken();
+
+    const options = {
+        hostname: 'fcm.googleapis.com',
+        path: '/v1/projects/kotlindelivery-abeaf/messages:send',
+        method: 'POST',
+        port: 443,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`, // Usamos el token generado
+        },
+    };
+    
+    tokens.forEach(token => {
+        const notification = JSON.stringify({
+            'message': {
+                'token': token, // Aquí se envía a cada dispositivo
+                'data': {
+                    'title': data.title,
+                    'body': data.body,
+                    'id_notification': data.id_notification,
+                },
+                'android': {
+                    'priority': 'high',
+                },
+                'apns': {
+                    'headers': {
+                        'apns-priority': '10',
+                    },
+                    'payload': {
+                        'aps': {
+                            'alert': {
+                                'title': data.title,
+                                'body': data.body,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+        
+        const req = https.request(options, (res) => {
+            console.log('Status code Notification', res.statusCode);
+            res.on('data', (d) => {
+                process.stdout.write(d);
+            });
+        });
+        
+        req.on('error', (error) => {
+            console.error(error);
+        });
+        
+        req.write(notification);
+        req.end();
+    });
+}
 }
