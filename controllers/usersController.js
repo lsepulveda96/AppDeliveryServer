@@ -46,9 +46,37 @@ module.exports = {
 
     async register(req, res, next){
         try{
-            // recibe parametros a traves del body
-            const user = req.body;
-            // crea el usuario
+            const { email, phone, name, lastname, image, password } = req.body;
+
+            // Verificar si el email ya está registrado
+            const existingEmail = await User.findByEmailRegister(email);
+            if (existingEmail) {
+                return res.status(409).json({
+                    success: false,
+                    message: 'El email ya está registrado'
+                });
+            }
+    
+            // Verificar si el número de teléfono ya está registrado
+            const existingPhone = await User.findByPhone(phone);
+            if (existingPhone) {
+                return res.status(409).json({
+                    success: false,
+                    message: 'El número de teléfono ya está registrado'
+                });
+            }
+    
+            // Si no hay conflictos, crear el usuario
+            const hash = await bcrypt.hash(password, 10);
+            const user = {
+                email,
+                name,
+                lastname,
+                phone,
+                image,
+                password: hash
+            };
+            
             const data = await User.create(user);
 
             // 1 id en db roles
@@ -68,6 +96,8 @@ module.exports = {
                 session_token: `JWT ${token}`
             };
 
+            await User.updateSessionToken(data.id, `JWT ${token}`);
+
             return res.status(201).json({
                 success:true,
                 message: 'El registro se realizo correctamente',
@@ -76,12 +106,36 @@ module.exports = {
             })
         }
         catch(error){
+
             console.log(`Error: ${error}`);
+
+            // Manejo específico de errores conocidos
+            if (error.message === 'Email ya registrado') {
+                return res.status(409).json({
+                    success: false,
+                    message: 'El email ya está registrado'
+                });
+            }
+            if (error.message === 'Numero de telefono ya registrado') {
+                return res.status(409).json({
+                    success: false,
+                    message: 'El numero de telefono ya está registrado'
+                });
+            }
+    
+            // Para otros errores, devolvemos un mensaje genérico
+            return res.status(501).json({
+                success: false,
+                message: 'Error al registrar usuario',
+                error: error.message
+            });
+
+           /* console.log(`Error: ${error}`);
             return res.status(501).json({
                 success: false,
                 message: 'Error al registrar usuario',
                 error: error
-            })
+            })*/
         }
     },
 

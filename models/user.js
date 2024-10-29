@@ -12,7 +12,7 @@ User.getAll = () => {
     FROM 
         users
     `;
-
+    
     // pueden ser varios usuarios o nada
     return db.manyOrNone(sql);
 }
@@ -126,11 +126,12 @@ User.findById = async (id, callback) => {
 }
 
 User.create = async (user) => {
-
-    // uso de caracteres o palabra secreta que se va a generar
-    const hash = await bcrypt.hash(user.password, 10);
-
-    const sql = `
+    
+    try{
+        // uso de caracteres o palabra secreta que se va a generar
+        const hash = await bcrypt.hash(user.password, 10);
+        
+        const sql = `
     INSERT INTO
         users(
             email,
@@ -144,20 +145,35 @@ User.create = async (user) => {
         )
         VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id
     `;
-
-    // retorna un valor o nada
-    // debe seguir el orden de los parametros de arriba
-    return db.oneOrNone(sql, [
-        user.email,
-        user.name,
-        user.lastname,
-        user.phone,
-        user.image,
-        //user.password,
-        hash,
-        new Date(),
-        new Date()
-    ])
+        
+        // retorna un valor o nada
+        // debe seguir el orden de los parametros de arriba
+        return db.oneOrNone(sql, [
+            user.email,
+            user.name,
+            user.lastname,
+            user.phone,
+            user.image,
+            //user.password,
+            hash,
+            new Date(),
+            new Date()
+        ]);
+        
+    }catch(error){
+        // manejo de errores para email o numero ya registrado
+        if (error.code === '23505') {
+            // Revisa si el mensaje del error incluye "email" o "phone" para saber qué campo es el duplicado
+            if (error.detail.includes('email')) {
+                throw new Error('Email ya registrado');
+            }
+            if (error.detail.includes('phone')) {
+                throw new Error('Numero de telefono ya registrado');
+            }
+        }
+        // Si es otro tipo de error, lo lanzamos tal como es
+        throw error;
+    }
 }
 
 // actualizar campo image user
@@ -174,7 +190,7 @@ User.update = (user) => {
     WHERE
         id = $1
     `;
-
+    
     return db.none(sql, [
         user.id,
         user.name,
@@ -183,7 +199,7 @@ User.update = (user) => {
         user.image,
         new Date()
     ]);
-
+    
 }
 
 
@@ -196,12 +212,12 @@ User.updateSessionToken = (id_user, session_token) => {
     WHERE
         id = $1
     `;
-
+    
     return db.none(sql, [
         id_user,
         session_token
     ]);
-
+    
 }
 
 
@@ -214,13 +230,24 @@ User.updateNotificationToken = (id_user, notification_token) => {
     WHERE
         id = $1
     `;
-
+    
     return db.none(sql, [
         id_user,
         notification_token
     ]);
-
+    
 }
+
+
+User.findByEmailRegister = async (email) => {
+    const sql = 'SELECT * FROM users WHERE email = $1';
+    return db.oneOrNone(sql, [email]); // Retorna null si no existe el email
+};
+
+User.findByPhone = async (phone) => {
+    const sql = 'SELECT * FROM users WHERE phone = $1';
+    return db.oneOrNone(sql, [phone]); // Retorna null si no existe el teléfono
+};
 
 
 module.exports = User;

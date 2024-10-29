@@ -48,7 +48,7 @@ INSERT INTO roles(
 VALUES(
 	'CLIENTE',
 	'cliente/home',
-	'https://www.clipartmax.com/png/middle/205-2050330_user-icon-user-icon-ico.png',
+	'http://icongal.com/gallery/image/55744/user_man_administrator.png',
 	'2024-10-04',
 	'2024-10-04'
 );
